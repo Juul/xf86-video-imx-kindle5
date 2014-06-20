@@ -387,7 +387,9 @@ MXQueryBestSize
 _X_EXPORT void
 xf86XVFillKeyHelper1 (ScreenPtr pScreen, CARD32 key, RegionPtr clipboxes)
 {
-	DrawablePtr root = &WindowTable[pScreen->myNum]->drawable;
+  // juul
+  //	DrawablePtr root = &WindowTable[pScreen->myNum]->drawable;
+	DrawablePtr root = pScreen->root->drawable;
 	XID pval[2];
 	BoxPtr pbox = REGION_RECTS(clipboxes);
 	int i, nbox = REGION_NUM_RECTS(clipboxes);

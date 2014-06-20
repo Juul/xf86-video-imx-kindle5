@@ -1075,6 +1075,7 @@ xf86SwitchModePriv(ScreenPtr pScreen, DisplayModePtr mode)
   ScreenPtr   pCursorScreen;
   Bool        Switched;
   int         px, py;
+  double      dpx, dpy;
   DeviceIntPtr dev, it;
 
   if (!pScr->vtSema || !mode || !pScr->SwitchMode)
@@ -1159,7 +1160,28 @@ xf86SwitchModePriv(ScreenPtr pScreen, DisplayModePtr mode)
   if (pScreen == pCursorScreen) {
     px = 0;
     py = 0;
-    miPointerSetPosition(dev, &px, &py);
+
+    // was:
+    //  miPointerSetPosition(dev, &px, &py);
+
+    // then changed to:
+    //  miPointerSetPosition(dev, Absolute, &px, &py);
+
+    // but got errors because miPointerSetPosition expects px and py to be 
+    // of type double, this gives the warning:
+    //   imx_display.c:1166:5: warning: passing argument 3 of 'miPointerSetPosition' from incompatible pointer type
+
+    // and also:
+    // /home/juul/projects/kindle/buildroot-custom/buildroot-2014.02/output/host/usr/arm-buildroot-linux-uclibcgnueabi/sysroot/usr/include/xorg/mipointer.h:118:1: note: expected 'double *' but argument is of type 'int *'
+
+    // ref:
+    // http://permalink.gmane.org/gmane.comp.freedesktop.xorg.devel/27787
+    
+    dpx = (double) px;
+    dpy = (double) py;
+    miPointerSetPosition(dev, Absolute, &dpx, &dpy);
+
+
   }
 
 //  for (it = inputInfo.devices; it; it = it->next)
@@ -1194,7 +1216,7 @@ xf86SwitchModePriv(ScreenPtr pScreen, DisplayModePtr mode)
 static void
 privSendConfigNotify (ScreenPtr pScreen)
 {
-    WindowPtr	pWin = WindowTable[pScreen->myNum];
+  WindowPtr	pWin = pScreen->root;
     xEvent	event;
 
     event.u.u.type = ConfigureNotify;
@@ -1469,10 +1491,11 @@ imxDisplayChangeFrameBufferRotateEPDC(int scrnIndex, int fbRotate)
 	* ModifyPixmapHeader and xf86EnableDisableFBAccess will put it back...
 	* Unfortunately.
 	*/
-	if (pScreenPixmap->devPrivate.ptr) {
 
-		pScrn->pixmapPrivate = pScreenPixmap->devPrivate;
-	}
+  // juul disabled this... not sure what it will break. maybe nothing?
+  //	if (pScreenPixmap->devPrivate.ptr) {
+  //		pScrn->pixmapPrivate = pScreenPixmap->devPrivate;
+  //	}
 
 	/* Make sure the layout is correct. */
 	xf86ReconfigureLayout();

@@ -1,8 +1,10 @@
-This is the source code for the xf86 imx video driver as published by Amazon in their 5.4.3.2 source code release:
+This is an attempt at getting the xf86 imx video driver working with X.Org R7 (the current version in buildroot).
+
+This is a slightly modified version of the code as published by Amazon in their 5.4.3.2 source code release:
 
 https://kindle.s3.amazonaws.com/Kindle_src_5.4.3.2_2317380003.tar.gz
 
-The imx video driver was tagged with the date 2011-04-11.
+The amazon-releasd imx video driver was tagged with the date 2011-04-11.
 
 A different version is floating around online at:
 
@@ -10,6 +12,4 @@ https://gitorious.org/xf86-video-imx/xf86-video-imx/
 
 but that version hasn't been updated since 2010-08-16.
 
-Nothing has been modified since the Amazon release except for the addition of this README file.
-
-
+For a version with no modification from the original amazon-released version (other than the addition of a README file) check out the version tagged with "amazon-release".

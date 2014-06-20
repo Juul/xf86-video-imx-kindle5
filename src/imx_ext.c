@@ -99,10 +99,10 @@ Proc_IMX_EXT_GetPixmapPhysAddr(ClientPtr client)
 	/* Check if any reply values need byte swapping */
 	if (client->swapped) {
 
-		swaps(&rep.sequenceNumber, n);
-		swapl(&rep.length, n);
-		swapl(&rep.pixmapPhysAddr, n);
-		swapl(&rep.pixmapPitch, n);
+		swaps(&rep.sequenceNumber);
+		swapl(&rep.length);
+		swapl(&rep.pixmapPhysAddr);
+		swapl(&rep.pixmapPitch);
 	}
 
 	/* Reply to client */
@@ -137,8 +137,8 @@ Proc_IMX_EXT_SetEpdcRotate(ClientPtr client)
 	/* Check if any reply values need byte swapping */
 	if (client->swapped) {
 
-		swaps(&rep.sequenceNumber, n);
-		swapl(&rep.length, n);
+		swaps(&rep.sequenceNumber);
+		swapl(&rep.length);
 	}
 
 	/* Reply to client */
@@ -169,11 +169,11 @@ SProc_IMX_EXT_GetPixmapPhysAddr(ClientPtr client)
 	REQUEST(xIMX_EXT_GetPixmapPhysAddrReq);
 
 	/* Swap request message length and verify it is correct. */
-	swaps(&stuff->length, n);
+	swaps(&stuff->length);
 	REQUEST_SIZE_MATCH(xIMX_EXT_GetPixmapPhysAddrReq);
 
 	/* Swap remaining request message parameters. */
-	swapl(&stuff->pixmap, n);
+	swapl(&stuff->pixmap);
 
 	return Proc_IMX_EXT_GetPixmapPhysAddr(client);
 }
@@ -186,12 +186,12 @@ SProc_IMX_EXT_SetEpdcRotate(ClientPtr client)
 	REQUEST(xIMX_EXT_SetEpdcRotateReq);
 
 	/* Swap request message length and verify it is correct. */
-	swaps(&stuff->length, n);
+	swaps(&stuff->length);
 	REQUEST_SIZE_MATCH(xIMX_EXT_SetEpdcRotateReq);
 
 	/* Swap remaining request message parameters. */
-	swaps(&stuff->scrnIndex, n);
-	swaps(&stuff->fbRotate, n);
+	swaps(&stuff->scrnIndex);
+	swaps(&stuff->fbRotate);
 
 	return Proc_IMX_EXT_GetPixmapPhysAddr(client);
 }
