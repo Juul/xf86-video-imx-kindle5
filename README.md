@@ -13,3 +13,11 @@ https://gitorious.org/xf86-video-imx/xf86-video-imx/
 but that version hasn't been updated since 2010-08-16.
 
 For a version with no modification from the original amazon-released version (other than the addition of a README file) check out the version tagged with "amazon-release".
+
+# xorg.conf
+
+The driver looks for "imx" sections in xorg.conf and for each section looks for an "fbdev" option which should be set to the frame buffer device name.
+
+Apparently DirectColor is only supported at up to 8bpp, but TrueColor is supported at higher color depths.
+
+The frame buffer device is then opened by the driver
