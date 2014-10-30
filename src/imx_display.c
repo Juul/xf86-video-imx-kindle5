@@ -445,7 +445,7 @@ imxDisplayGetCurrentMode(ScrnInfoPtr pScrn, int fd, const char* modeName)
 	}
 		
 	/* Allocate a new mode structure. */
-	DisplayModePtr mode = xalloc(sizeof(DisplayModeRec));
+	DisplayModePtr mode = alloc(sizeof(DisplayModeRec));
 
 	/* Transfer info from fbdev var screen info */
 	/* into the X DisplayModeRec. */
@@ -578,9 +578,9 @@ imxDisplayDeleteModes(DisplayModePtr modesList)
 		}
 
 		if (NULL != mode->name) {
-			xfree(mode->name);
+			free(mode->name);
 		}
-		xfree(mode);
+		free(mode);
 	}
 }
 
@@ -852,7 +852,7 @@ imxDisplayPreInit(ScrnInfoPtr pScrn)
 	}
 	
 	/* Allocate memory for display private data */
-	imxPtr->displayPrivate = xcalloc(sizeof(ImxDisplayRec), 1);
+	imxPtr->displayPrivate = calloc(sizeof(ImxDisplayRec), 1);
 	if (NULL == imxPtr->displayPrivate) {
 		return FALSE;
 	}
@@ -1128,10 +1128,10 @@ xf86SwitchModePriv(ScreenPtr pScreen, DisplayModePtr mode)
       pScr->frameX1 = pScr->virtualX - 1;
     }
 
-//    if (pScreen == pCursorScreen)
-//      pScr->frameY0 = py - (mode->VDisplay / 2) + 1;
-//    else
-      pScr->frameY0 = (pScr->frameY0 + pScr->frameY1 + 1 - mode->VDisplay) / 2;
+    //    if (pScreen == pCursorScreen)
+    //      pScr->frameY0 = py - (mode->VDisplay / 2) + 1;
+    //    else
+    pScr->frameY0 = (pScr->frameY0 + pScr->frameY1 + 1 - mode->VDisplay) / 2;
 
     if (pScr->frameY0 < 0)
       pScr->frameY0 = 0;
@@ -1142,47 +1142,31 @@ xf86SwitchModePriv(ScreenPtr pScreen, DisplayModePtr mode)
       pScr->frameY1 = pScr->virtualY - 1;
     }
   }
-//  xf86EnterServerState(OPERATING);
 
-//  if (pScr->AdjustFrame)
-//    (*pScr->AdjustFrame)(pScr->scrnIndex, pScr->frameX0, pScr->frameY0, 0);
-
-  /* The original code centered the frame around the cursor if possible.
-   * Since this is hard to achieve with multiple cursors, we do the following:
-   *   - center around the first pointer
-   *   - move all other pointers to the nearest edge on the screen (or leave
-   *   them unmodified if they are within the boundaries).
-   */
-//  if (pScreen == pCursorScreen)
-//  {
-//      xf86WarpCursor(dev, pScreen, px, py);
-//  }
   if (pScreen == pCursorScreen) {
     px = 0;
     py = 0;
 
-    // was:
-    //  miPointerSetPosition(dev, &px, &py);
+    /* 
+       Based on:
+       http://permalink.gmane.org/gmane.comp.freedesktop.xorg.devel/27787 
+    */
 
-    // then changed to:
-    //  miPointerSetPosition(dev, Absolute, &px, &py);
-
-    // but got errors because miPointerSetPosition expects px and py to be 
-    // of type double, this gives the warning:
-    //   imx_display.c:1166:5: warning: passing argument 3 of 'miPointerSetPosition' from incompatible pointer type
-
-    // and also:
-    // /home/juul/projects/kindle/buildroot-custom/buildroot-2014.02/output/host/usr/arm-buildroot-linux-uclibcgnueabi/sysroot/usr/include/xorg/mipointer.h:118:1: note: expected 'double *' but argument is of type 'int *'
-
-    // ref:
-    // http://permalink.gmane.org/gmane.comp.freedesktop.xorg.devel/27787
+#if GET_ABI_MAJOR(ABI_XINPUT_VERSION) >= 15
+    {
+      double dx = px, dy = py;
+      miPointerSetPosition(inputInfo.pointer, Absolute, &dx, &dy);
+      px = (int)dx;
+      py = (int)dy;
+    }
+#elif GET_ABI_MAJOR(ABI_XINPUT_VERSION) >= 11
+    {
+      miPointerSetPosition(inputInfo.pointer, Absolute, px, py);
+    }
     
-    dpx = (double) px;
-    dpy = (double) py;
-    miPointerSetPosition(dev, Absolute, &dpx, &dpy);
-
-
+    
   }
+
 
 //  for (it = inputInfo.devices; it; it = it->next)
 //  {

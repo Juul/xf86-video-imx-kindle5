@@ -20,4 +20,11 @@ The driver looks for "imx" sections in xorg.conf and for each section looks for 
 
 Apparently DirectColor is only supported at up to 8bpp, but TrueColor is supported at higher color depths.
 
-The frame buffer device is then opened by the driver
+The frame buffer device is then opened by the driver.
+
+# Other drivers
+
+There seems to be another driver available here:
+
+https://github.com/plasticlogic/mod_plepaper/blob/master/mod_plepaper_imx/epdc-imx.c
+
